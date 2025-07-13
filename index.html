@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MegaETH Early Checker</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Courier New', monospace;
+    background: #e8e2d5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .container {
+    background: #f5f1ea;
+    border: 4px solid #2d2d2d;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(45, 45, 45, 0.15);
+    position: relative;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .logo {
+    width: 80px;
+    height: 80px;
+    background: #2d2d2d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    position: relative;
+  }
+
+  .logo::before {
+    content: 'M';
+    color: #f5f1ea;
+    font-size: 2.5rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+  }
+
+  .logo::after {
+    content: '••';
+    color: #f5f1ea;
+    position: absolute;
+    bottom: 15px;
+    font-size: 1rem;
+    letter-spacing: 4px;
+  }
+
+  h1 {
+    color: #2d2d2d;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .input-group {
+    margin-bottom: 2rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 3px solid #2d2d2d;
+    border-radius: 12px;
+    background: #f5f1ea;
+    transition: all 0.3s ease;
+    outline: none;
+    margin-bottom: 1rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  input:focus {
+    background: white;
+    box-shadow: 0 0 0 3px rgba(45, 45, 45, 0.1);
+  }
+
+  input::placeholder {
+    color: #999;
+  }
+
+  button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #f5f1ea;
+    background: #2d2d2d;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 4px 15px rgba(45, 45, 45, 0.3);
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 45, 45, 0.4);
+    background: #404040;
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  button:disabled {
+    background: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  #result {
+    margin-top: 2rem;
+    background: #f5f1ea;
+    border: 3px solid #2d2d2d;
+    border-radius: 15px;
+    padding: 1.5rem;
+    min-height: 140px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #2d2d2d;
+    text-align: left;
+    white-space: pre-line;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+  }
+
+  #result:not(:empty) {
+    background: white;
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+
+  .footer a {
+    color: #2d2d2d;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(45, 45, 45, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .footer a:hover {
+    background: rgba(45, 45, 45, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #2d2d2d;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .tier-display {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    font-weight: bold;
+  }
+
+  .score-highlight {
+    color: #2d2d2d;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: #e8e2d5;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .early-indicator {
+    background: #2d2d2d;
+    color: #f5f1ea;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      padding: 2rem;
+      margin: 1rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+    
+    .logo {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .logo::before {
+      font-size: 2rem;
+    }
+    
+    .footer {
+      position: static;
+      margin-top: 2rem;
+      transform: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div>
+    <h1>EARLY MEGA ETH CHECKER</h1>
+    <p class="subtitle">Check how early your wallet joined the mega eth Testnet!</p>
+  </div>
+  
+  <div class="input-group">
+    <input type="text" id="wallet" placeholder="ENTER WALLET ADDRESS (0x...)" />
+    <button id="checkBtn" onclick="checkWallet()">CHECK WALLET</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<div class="footer">
+  MADE WITH ❤️ BY <a href="https://x.com/clankak" target="_blank">cLANKAK</a>
+</div>
+
+<script>
+  // Convert Wei hex string to ETH decimal string
+  function weiToEth(weiHex) {
+    try {
+      const wei = BigInt(weiHex);
+      // JS Number can't safely represent big ints, so do string division
+      // Simple division by 1e18 but string-based for safety:
+      const eth = Number(wei) / 1e18;
+      return eth.toFixed(5);
+    } catch {
+      return "0";
+    }
+  }
+
+  // Calculate tier and early score factoring block & first TX date
+  function calculateTierAndScore(firstBlock, latestBlock, firstDateStr) {
+    const currentDate = new Date();
+    const firstDate = new Date(firstDateStr);
+    const daysSinceFirstTx = (currentDate - firstDate) / (1000 * 60 * 60 * 24);
+
+    // Block score: newer block (closer to zero) => higher score
+    const blockScore = (1 - firstBlock / latestBlock) * 100;
+
+    // Date score normalized for 180 days cutoff
+    let dateScore = 0;
+    if (daysSinceFirstTx <= 180) {
+      dateScore = ((180 - daysSinceFirstTx) / 180) * 100;
+    }
+
+    // Weighted score: 70% block, 30% date
+    const score = 0.7 * blockScore + 0.3 * dateScore;
+
+    let tier = "LATE";
+    if (score >= 90) tier = "MEGA EARLY";
+    else if (score >= 70) tier = "EARLY";
+    else if (score >= 40) tier = "MODERATE";
+
+    return {
+      score: score.toFixed(2),
+      tier
+    };
+  }
+
+  // RPC helper
+  async function rpcCall(method, params = []) {
+    const res = await fetch("/rpc", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+    });
+    const text = await res.text();
+    return JSON.parse(text);
+  }
+
+  // Find first block where wallet has TX count > 0 via binary search
+  async function findFirstTxBlock(address, latestBlock) {
+    let left = 0, right = latestBlock, first = latestBlock;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const txHex = await rpcCall("eth_getTransactionCount", [address, `0x${mid.toString(16)}`]);
+      const count = parseInt(txHex.result, 16);
+
+      if (count > 0) {
+        first = mid;
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+      await delay(100); // small delay to avoid rate limits
+    }
+    return first;
+  }
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Main wallet check function
+  async function checkWallet() {
+    const address = document.getElementById("wallet").value.trim();
+    const result = document.getElementById("result");
+    const button = document.getElementById("checkBtn");
+
+    if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+      result.innerHTML = "INVALID ETHEREUM ADDRESS";
+      return;
+    }
+
+    result.innerHTML = '<div class="loading"></div>CHECKING WALLET...';
+    button.disabled = true;
+
+    try {
+      const latestBlockHex = await rpcCall("eth_blockNumber");
+      const latestBlock = parseInt(latestBlockHex.result, 16);
+
+      const txCountHex = await rpcCall("eth_getTransactionCount", [address, "latest"]);
+      const txCount = parseInt(txCountHex.result, 16);
+
+      if (txCount === 0) {
+        result.innerHTML = "NO TRANSACTIONS FOUND ON MEGAETH";
+        button.disabled = false;
+        return;
+      }
+
+      // Find first transaction block via binary search
+      const firstBlock = await findFirstTxBlock(address, latestBlock);
+
+      // Get block info for first TX block
+      const firstBlockData = await rpcCall("eth_getBlockByNumber", [`0x${firstBlock.toString(16)}`, false]);
+      const firstDate = new Date(parseInt(firstBlockData.result.timestamp, 16) * 1000)
+        .toISOString().split("T")[0];
+
+      // Get balance
+      const balanceHex = await rpcCall("eth_getBalance", [address, "latest"]);
+      const balanceEth = weiToEth(balanceHex.result);
+
+      // Calculate tier & score
+      const { score, tier } = calculateTierAndScore(firstBlock, latestBlock, firstDate);
+
+      result.innerHTML = `
+FIRST TX BLOCK: <strong>${firstBlock.toLocaleString()}</strong>
+FIRST TX DATE: <strong>${firstDate}</strong>
+
+TOTAL TRANSACTIONS: <strong>${txCount.toLocaleString()}</strong>
+BALANCE: <strong>${balanceEth} ETH</strong>
+
+<div class="tier-display">${tier}</div>
+EARLY SCORE: <span class="score-highlight">${score}%</span>
+
+<div class="early-indicator">EARLIER THAN ~${score}% OF WALLETS</div>
+      `;
+
+    } catch (err) {
+      result.innerHTML = `ERROR: ${err.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  // Enter key support on input
+  document.getElementById("wallet").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      checkWallet();
+    }
+  });
+</script>
+
+</body>
+</html>

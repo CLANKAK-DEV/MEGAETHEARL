@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/rpc.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/rpc",
+      "destination": "/api/rpc"
+    }
+  ]
+}
