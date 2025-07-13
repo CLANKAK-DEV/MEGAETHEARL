@@ -1,10 +1,11 @@
 {
   "name": "megaethearl",
   "version": "1.0.0",
-  "main": "rpc.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "vercel dev"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +14,6 @@
     "express": "^5.1.0",
     "node-fetch": "^3.3.2"
   },
-  "description": ""
+  "description": "",
+  "type": "module"
 }
