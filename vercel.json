@@ -1,4 +1,8 @@
 {
+  "buildCommand": "echo 'No build required'",
+  "devCommand": "node server.js",
+  "installCommand": "npm install",
+  "framework": null,
   "functions": {
     "api/rpc.js": {
       "runtime": "@vercel/node@3.0.14"
