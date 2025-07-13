@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/rpc.js": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@3.0.14"
     }
   },
   "rewrites": [

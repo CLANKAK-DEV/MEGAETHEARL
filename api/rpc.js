@@ -1,25 +1,33 @@
+// api/rpc.js
 export default async function handler(req, res) {
-  const rpcUrl = "https://carrot.megaeth.com/rpc";
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
-    const upstream = await fetch(rpcUrl, {
+    const response = await fetch("https://carrot.megaeth.com/rpc", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req.body),
     });
-
-    const text = await upstream.text(); // always read as text first
-
-    try {
-      const json = JSON.parse(text); // parse safely
-      res.status(200).json(json);
-    } catch (parseError) {
-      console.error("❌ Invalid JSON returned from RPC:", text);
-      res.status(502).json({ error: "Invalid JSON from MegaETH", raw: text });
-    }
-
-  } catch (err) {
-    console.error("❌ RPC Proxy Error:", err);
-    res.status(500).json({ error: "Proxy failed", message: err.message });
+    
+    const data = await response.json();
+    return res.status(200).json(data);
+    
+  } catch (error) {
+    console.error('RPC Error:', error);
+    return res.status(500).json({ 
+      error: "Proxy failed", 
+      message: error.message 
+    });
   }
 }
